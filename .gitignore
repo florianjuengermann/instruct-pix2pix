@@ -1,3 +1,4 @@
 checkpoints
 Miniconda.sh
 src
+**/__pycache__

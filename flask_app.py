@@ -1,20 +1,27 @@
-import flask
+from flask import Flask, request, send_file, jsonify
 from tempfile import NamedTemporaryFile
 
 import edit_cli
 
-app = flask.Flask(__name__)
 
+model_args = {
+
+}
+
+app = Flask(__name__)
+
+
+instructp2p = edit_cli.InstructP2P(model_args)
 # route /spell accepts and image and a text description of the spell
 
 
 @app.route('/spell', methods=['POST'])
 def spell():
-    image = flask.request.files['image']
-    spell = flask.request.form['spell']
-    steps = int(flask.request.form.get("steps", 100))
-    cfg_text = float(flask.request.form.get("cfg_text", 7.5))
-    cfg_image = float(flask.request.form.get("cfg_image", 1.5))
+    image = request.files['image']
+    spell = request.form['spell']
+    steps = int(request.form.get("steps", 50))
+    cfg_text = float(request.form.get("cfg_text", 7.5))
+    cfg_image = float(request.form.get("cfg_image", 1.5))
 
     args = {
         "edit": spell,
@@ -28,9 +35,14 @@ def spell():
             image.save(img_in.name)
             args['input'] = img_in.name
             args['output'] = img_out.name
-            edit_cli.run(args)
-            return flask.send_file(img_out.name)
+            instructp2p.run(args)
+            return send_file(img_out.name)
     except Exception as e:
-        return flask.jsonify({'success': False, 'error': str(e)})
+        print(e)
+        return jsonify({'success': False, 'error': str(e)})
 
     # return flask.jsonify({'success': True})
+
+
+if __name__ == '__main__':
+    app.run(debug=False)
