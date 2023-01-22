@@ -153,7 +153,7 @@ DESCRIPTION:
 a watercolor painting of a sea turtle, a digital painting, by Kubisi art, featured on dribbble, medibang, warm saturated palette, red and green tones, turquoise horizon, digital art h 9 6 0, detailed scenery —width 672, illustration:.4, spray art, artstatiom
 
 EDIT:
-Sea turtle as a weird clown
+Make the sea turtle into a clown
 
 DESCRIPTION:
 {desc}
