@@ -2,7 +2,7 @@ from flask import Flask, request, send_file, jsonify
 from tempfile import NamedTemporaryFile
 from dotenv import load_dotenv
 from supabase import create_client, Client, SupabaseStorageClient
-from PIL import Image
+from PIL import Image, ImageOps
 from flask_cors import CORS
 
 import os
@@ -76,8 +76,9 @@ def spell():
     try:
         # download image
         print(f"img_url: {img_url}")
-        image = Image.open(io.BytesIO(requests.get(
-            img_url, stream=True).content)).convert("RGB")
+        image = Image.open(io.BytesIO(
+            requests.get(img_url, stream=True).content))
+        image = ImageOps.exif_transpose(image).convert("RGB")
         # resize image to max 768px on longest side
         if max(image.width, image.height) > 768:
             if image.width > image.height:
