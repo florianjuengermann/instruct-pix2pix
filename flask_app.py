@@ -3,8 +3,10 @@ from tempfile import NamedTemporaryFile
 from dotenv import load_dotenv
 from supabase import create_client, Client, SupabaseStorageClient
 from PIL import Image
+from flask_cors import CORS
 
 import os
+import io
 import requests
 import uuid
 
@@ -17,7 +19,7 @@ model_args = {
 }
 
 app = Flask(__name__)
-
+CORS(app)
 
 instructp2p = edit_cli.InstructP2P(model_args)
 # route /spell accepts and image and a text description of the spell
@@ -73,7 +75,18 @@ def spell():
 
     try:
         # download image
-        image = Image.open(requests.get(img_url, stream=True).raw)
+        print(f"img_url: {img_url}")
+        image = Image.open(io.BytesIO(requests.get(
+            img_url, stream=True).content)).convert("RGB")
+        # resize image to max 768px on longest side
+        if max(image.width, image.height) > 768:
+            if image.width > image.height:
+                image = image.resize(
+                    (768, int(768 * image.height / image.width)))
+            else:
+                image = image.resize(
+                    (int(768 * image.width / image.height), 768))
+
         with NamedTemporaryFile(suffix='.jpg') as img_out:
             run_spell(image, spell, steps, cfg_text, cfg_image, img_out.name)
             # upload image to supabase
